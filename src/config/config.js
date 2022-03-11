@@ -86,6 +86,7 @@ export const TAB = {
 export const HW = {
   trezor: 'trezor',
   ledger: 'ledger',
+  bitBox: 'bitBox',
 };
 
 export const POPUP_WINDOW = {
