@@ -26,7 +26,6 @@ import LogoOriginal from '../../../assets/img/logo.svg';
 import LogoWhite from '../../../assets/img/logoWhite.svg';
 import LedgerLogo from '../../../assets/img/ledgerLogo.svg';
 import TrezorLogo from '../../../assets/img/trezorLogo.svg';
-import BitBoxLogo from '../../../assets/img/bitBoxLogo.svg';
 import { CheckCircleIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import TrezorWidget from '../components/trezorWidget';
 import {
@@ -38,11 +37,13 @@ import {
 } from '../../../api/extension';
 import { MdUsb } from 'react-icons/md';
 import { Planet } from 'react-kawaii';
+import BitBoxLogo from '../../../assets/img/bitBoxLogo.svg';
+import BitBox02 from '../../../lib/BitBox02';
 
 const MANUFACTURER = {
   ledger: 'Ledger',
   trezor: 'SatoshiLabs',
-  bitBox: 'shiftcrypto.ch'
+  bitBox02Multi: 'shiftcrypto.ch',
 };
 
 const App = () => {
@@ -167,11 +168,11 @@ const ConnectHW = ({ onConfirm }) => {
           height="55px"
           border="solid 1px"
           rounded="xl"
-          borderColor={selected === HW.bitBox && 'teal.400'}
-          borderWidth={selected === HW.bitBox && '3px'}
+          borderColor={selected === HW.bitBox02Multi && 'teal.400'}
+          borderWidth={selected === HW.bitBox02Multi && '3px'}
           p={1}
           _hover={{ opacity: 0.8 }}
-          onClick={() => setSelected(HW.bitBox)}
+          onClick={() => setSelected(HW.bitBox02Multi)}
         >
           <Image
             draggable={false}
@@ -193,10 +194,11 @@ const ConnectHW = ({ onConfirm }) => {
           the device and open the Cardano app. Then click Continue.
         </Text>
       )}
-      {selected === HW.bitBox && (
+      {selected === HW.bitBox02Multi && (
         <Text width="300px">
-          Connect your <b>BitBox02 Multi Edition</b> device directly to your computer.
-          Open the BitBoxApp app and unlock the device. Then click Continue.
+          Connect your <b>BitBox02 Multi Edition</b> device directly to your
+          computer. Open the BitBoxApp app and unlock the device. Then click
+          Continue.
         </Text>
       )}
       {selected && <Icon as={MdUsb} boxSize={7} mt="6" />}
@@ -216,10 +218,11 @@ const ConnectHW = ({ onConfirm }) => {
               const DeviceName = {
                 trezor: 'Trezor',
                 ledger: 'Ledger',
-                bitBox: 'BitBox02'
-              }
+                bitBox02Multi: 'BitBox02 Multi Edition',
+              };
+              console.log(device);
               setError(
-                `Device ${device.name} from manufacturer ${device.manufacturerName} is not a ${DeviceName[selected]}.`
+                `Device ${device.productName} from manufacturer ${device.manufacturerName} is not a ${DeviceName[selected]}.`
               );
               setIsLoading(false);
               return;
@@ -381,6 +384,11 @@ const SelectAccounts = ({ data, onConfirm }) => {
                   name: `Trezor ${parseInt(accountIndexes[index]) + 1}`,
                 }));
                 trezorRef.current.closeModal();
+
+                // TODO: ------------------------------
+              } else if (device === HW.bitBox02Multi) {
+                var bitBox = await initHW({ device });
+                console.log(bitBox);
               }
               await createHWAccounts(accounts);
               return onConfirm();

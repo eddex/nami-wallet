@@ -39,6 +39,7 @@ import TrezorConnect from '../../../temporary_modules/trezor-connect';
 import AssetFingerprint from '@emurgo/cip14-js';
 import Web3Utils from 'web3-utils';
 import { milkomedaNetworks } from '@dcspark/milkomeda-constants';
+import BitBox02 from '../../lib/BitBox02';
 
 export const getStorage = (key) =>
   new Promise((res, rej) =>
@@ -1006,7 +1007,7 @@ export const signTxHW = async (
     });
     witnessSet.set_vkeys(vkeys);
     return witnessSet;
-  } else {
+  } else if (hw.device === HW.trezor) {
     keyHashes.forEach((keyHash) => {
       if (keyHash === account.paymentKeyHash)
         keys.payment = {
@@ -1044,6 +1045,8 @@ export const signTxHW = async (
     });
     witnessSet.set_vkeys(vkeys);
     return witnessSet;
+  } else if (hw.device === HW.bitBox02Multi) {
+    // TODO
   }
 };
 
@@ -1439,6 +1442,11 @@ export const initHW = async ({ device, id }) => {
         },
       });
     } catch (e) {}
+  } else if (device === HW.bitBox02Multi) {
+    const bitBox02 = new BitBox02(() => console.log('BitBox02 logged out'));
+    await bitBox02.init();
+    console.log(bitBox02); // TODO: show pairing code somewhere
+    return bitBox02;
   }
 };
 
